@@ -21,6 +21,7 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
     ImageView img;
+    ImageView img2;
     TextView tv;
     TextView tv2;
     TextView tv3;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         img=(ImageView)findViewById(R.id.imageView);
+        img2=(ImageView)findViewById(R.id.imageView2);
         tv=(TextView)findViewById(R.id.textView);
         tv2=(TextView)findViewById(R.id.textView2);
         tv3=(TextView)findViewById(R.id.textView3);
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {//執行緒必覆寫的方法
                 super.run();
-                String str_url="http://www.lolpix.com/_pics/Funny_Pictures_743/Funny_Pictures_7435.jpg";
+                String str_url="https://5.imimg.com/data5/UH/ND/MY-4431270/red-rose-flower-500x500.jpg";
                 URL url;//新增一個網址型態的變數準備接收網址字串
                 try {
                     url = new URL(str_url);//URL有try catch
@@ -159,14 +161,12 @@ public class MainActivity extends AppCompatActivity {
                 InputStream inputStream=conn.getInputStream();
                 ByteArrayOutputStream bos=new ByteArrayOutputStream();
                 byte[] buf=new byte[1024];//做一個位元組陣列，大小1024(要幹嘛?)
-
                 final int totallength=conn.getContentLength();//把conn的總大小放進名為totallength的int型態的變數中
                 int sum=0;//新增一個名為sum的int變數
-
                 int length;//新增一個名為length的int變數
                 while ((length=inputStream.read(buf))!=-1){//當把每次從buf讀到的東西丟進length中，並判斷length會不會等於-1(沒有資料的時候讀到的就是-1，有資料的時候讀到的是buf的1024陣列)
-                    // sum += length;//sum=sum+length的意思
-                    sum=sum+length;
+                    sum += length;//sum=sum+length的意思
+                    //sum=sum+length;
                     final int tmp=sum;//把sum變數丟進tmp中
                     bos.write(buf,0,length);
                 }
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
-            img.setImageBitmap(bitmap);
+            img2.setImageBitmap(bitmap);
         }
 
         @Override
