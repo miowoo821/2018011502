@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {//執行緒必覆寫的方法
                 super.run();
                 String str_url="http://www.lolpix.com/_pics/Funny_Pictures_743/Funny_Pictures_7435.jpg";
-                URL url;
+                URL url;//新增一個網址型態的變數準備接收網址字串
                 try {
                     url = new URL(str_url);//URL有try catch
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();//要catch
@@ -143,8 +143,63 @@ public class MainActivity extends AppCompatActivity {
         task.execute(10);
     }
 
+
+    //重新寫一個AsyncTask來試試
+    class MyImageTask extends AsyncTask<String,Integer,Bitmap>{//第一個泛型傳入值：字串(因為要傳入網址解析，所以網址是字串)；第二個泛型回傳值：Interger(因為)；第三個泛型為結果值：BitMap(因為是圖片下載，最後得到的是BitMap
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+
+            String str_url=strings[0];//接收第一個泛型的傳入值
+            URL url;//新增一個網址型態的變數準備接收網址字串
+            try {
+                url = new URL(str_url);//URL有try catch
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();//要catch
+                conn.setRequestMethod("GET");//GET 跟 POST?
+                conn.connect();
+                InputStream inputStream=conn.getInputStream();
+                ByteArrayOutputStream bos=new ByteArrayOutputStream();
+                byte[] buf=new byte[1024];//做一個位元組陣列，大小1024(要幹嘛?)
+
+                final int totallength=conn.getContentLength();//把conn的總大小放進名為totallength的int型態的變數中
+                int sum=0;//新增一個名為sum的int變數
+
+                int length;//新增一個名為length的int變數
+                while ((length=inputStream.read(buf))!=-1){//當把每次從buf讀到的東西丟進length中，並判斷length會不會等於-1(沒有資料的時候讀到的就是-1，有資料的時候讀到的是buf的1024陣列)
+                    // sum += length;//sum=sum+length的意思
+                    sum=sum+length;
+                    final int tmp=sum;//把sum變數丟進tmp中
+                    bos.write(buf,0,length);
+                }
+
+                byte[] results=bos.toByteArray();
+                final Bitmap bmp= BitmapFactory.decodeByteArray(results,0,results.length);
+                return bmp;
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            img.setImageBitmap(bitmap);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+    }
+
     public void click3(View v){
-        MyTask task = new MyTask();
+        MyImageTask task = new MyImageTask();
+        task.execute("http://www.lolpix.com/_pics/Funny_Pictures_743/Funny_Pictures_7435.jpg");
 
     }
 }
